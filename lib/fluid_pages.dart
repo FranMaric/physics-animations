@@ -5,7 +5,7 @@ import 'package:animations_test/fluid_page_clipper.dart';
 import 'package:animations_test/physical_point.dart';
 import 'package:flutter/material.dart';
 
-const pointMass = 10;
+const pointMass = 20;
 const springStiffness = 1;
 const dampingStiffness = 0.2;
 
@@ -53,7 +53,7 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
   @override
   void initState() {
     super.initState();
-    final random = Random(1234);
+    final random = Random(123456);
 
     points = List.generate(
       pointCount,
@@ -104,6 +104,13 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
 
     points.first.force = Offset(points.first.force.dx, 0);
     points.last.force = Offset(points.last.force.dx, 0);
+
+    for (int i = 0; i < points.length; i++) {
+      points[i].position += points[i].velocity * dt;
+
+      final acceleration = points[i].force / pointMass.toDouble();
+      points[i].velocity += acceleration * dt;
+    }
   }
 
   double distanceBetweenPoints(Offset p1, Offset p2) {
