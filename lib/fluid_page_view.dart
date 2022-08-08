@@ -6,8 +6,9 @@ import 'package:animations_test/physical_point.dart';
 import 'package:flutter/material.dart';
 
 const pointMass = 20;
-const springStiffness = 1;
-const dampingStiffness = 0.2;
+const springStiffness = 4;
+const dampingStiffness = 3;
+const wallAttractionForce = 90.0;
 
 class FluidPageView extends StatelessWidget {
   const FluidPageView({required this.firstPage, required this.secondPage, Key? key}) : super(key: key);
