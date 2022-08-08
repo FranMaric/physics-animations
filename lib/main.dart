@@ -1,4 +1,4 @@
-import 'package:animations_test/fluid_pages.dart';
+import 'package:animations_test/fluid_page_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {
