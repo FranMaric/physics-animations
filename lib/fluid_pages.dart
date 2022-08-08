@@ -9,8 +9,8 @@ const pointMass = 20;
 const springStiffness = 1;
 const dampingStiffness = 0.2;
 
-class FluidPages extends StatelessWidget {
-  const FluidPages({required this.firstPage, required this.secondPage, Key? key}) : super(key: key);
+class FluidPageView extends StatelessWidget {
+  const FluidPageView({required this.firstPage, required this.secondPage, Key? key}) : super(key: key);
 
   final Widget firstPage;
   final Widget secondPage;
@@ -89,31 +89,53 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
 
       final springForce = Offset.fromDirection(
         forceDirection,
-        springStiffness * (distanceBetweenPoints(points[i].position, points[i].position) - restLength),
+        springStiffness * (distanceBetween(points[i].position, points[i].position) - restLength),
       );
 
-      //TODO add spring dampening
-      // final springDampingForce = Offset.fromDirection(
-      //   forceDirection,
-      //   dampingStiffness * lengthChangeSpeed,
-      // );
+      final unitVector =
+          (points[i + 1].position - points[i].position) / distanceBetween(points[i + 1].position, points[i].position);
 
-      points[i].force += -springForce;
+      final velocityVector = points[i + 1].velocity - points[i].velocity;
+
+      final angle = acos((unitVector.dx * velocityVector.dx + unitVector.dy * velocityVector.dy) /
+          (sqrt(unitVector.dx * unitVector.dx + unitVector.dy * unitVector.dy) *
+              sqrt(velocityVector.dx * velocityVector.dx + velocityVector.dy * velocityVector.dy)));
+
+      final springDampingForce = Offset.fromDirection(
+        forceDirection,
+        dampingStiffness * velocityVector.distance * cos(angle),
+      );
+
+      if (springDampingForce.isFinite) {
+        points[i].force += springDampingForce;
+        points[i + 1].force -= springDampingForce;
+      }
+
+      points[i].force -= springForce;
       points[i + 1].force += springForce;
+
+      /// Constant force towards right of the screen
+      points[i].force += const Offset(wallAttractionForce, 0);
     }
 
-    points.first.force = Offset(points.first.force.dx, 0);
-    points.last.force = Offset(points.last.force.dx, 0);
-
     for (int i = 0; i < points.length; i++) {
+      /// Points should only move horizontally
+      points[i].force = Offset(points[i].force.dx, 0);
+
+      /// Update speed
       points[i].position += points[i].velocity * dt;
+
+      /// Points should be stopped on the right screen edge
+      if (points[i].position.dx > widget.size.width) {
+        points[i].position = Offset(widget.size.width, points[i].position.dy);
+      }
 
       final acceleration = points[i].force / pointMass.toDouble();
       points[i].velocity += acceleration * dt;
     }
   }
 
-  double distanceBetweenPoints(Offset p1, Offset p2) {
+  double distanceBetween(Offset p1, Offset p2) {
     return pow(pow(p1.dx - p2.dx, 2) + pow(p1.dy - p2.dy, 2), 0.5).roundToDouble();
   }
 
@@ -149,7 +171,6 @@ class MyPainter extends CustomPainter {
           ..style = PaintingStyle.fill,
       );
 
-      // if (point.force.distance > 1) {
       canvas.drawLine(
         point.position,
         point.position + point.force,
@@ -158,7 +179,6 @@ class MyPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2,
       );
-      // }
     }
 
     final path = Path();

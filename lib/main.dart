@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FluidPages(
+      home: FluidPageView(
         firstPage: Container(color: Colors.red),
         secondPage: Container(color: Colors.blue),
       ),
