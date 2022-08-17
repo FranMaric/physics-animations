@@ -5,5 +5,6 @@ class PhysicalPoint {
 
   Offset position;
   Offset velocity;
+  //TODO: remove force
   Offset force;
 }
