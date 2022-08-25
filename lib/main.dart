@@ -16,9 +16,37 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FluidPageView(
-        firstPage: Container(color: Colors.red),
-        secondPage: Container(color: Colors.blue),
+      home: Scaffold(
+        body: FluidPageView(
+          children: [
+            Positioned.fill(
+              child: Container(
+                color: Colors.red,
+                alignment: Alignment.center,
+                child: const Text(
+                  'I am first',
+                  style: TextStyle(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                color: Colors.blue,
+                alignment: Alignment.center,
+                child: const Text(
+                  'I am second',
+                  style: TextStyle(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
