@@ -24,6 +24,9 @@ class FluidPageClipper extends CustomClipper<Path> {
       offsets[offsets.length - 1].dy,
     );
 
+    path.lineTo(size.width, size.height);
+    path.lineTo(size.width, 0);
+
     return path;
   }
 

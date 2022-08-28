@@ -25,8 +25,10 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
   late final Timer timer;
   late final List<PhysicalPoint> points;
 
-  static const int fps = 80;
+  static const int fps = 60;
   static const int pointCount = 10;
+
+  bool isFlipped = false;
 
   @override
   void initState() {
@@ -56,14 +58,6 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
 
     for (int i = 0; i < points.length; i++) {
       points[i].force = Offset.zero;
-    }
-
-    if (touchOffset != null) {
-      for (int i = 0; i < points.length; i++) {
-        final force = -1 / distanceBetween(touchOffset!, points[i].position) * 50000;
-
-        points[i].force = Offset(force, 0);
-      }
     }
 
     for (int i = 0; i < points.length - 1; i++) {
@@ -103,15 +97,24 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
       points[i].force += const Offset(wallAttractionForce, 0);
     }
 
+    if (touchOffset != null && pullingPointIndex != null) {
+      points[pullingPointIndex!].position = touchOffset!;
+      points[pullingPointIndex!].force = Offset.zero;
+    }
+
     /// First and last point get more wall attraction force
-    points.first.force += const Offset(wallAttractionForce * 2, 0);
-    points.last.force += const Offset(wallAttractionForce * 2, 0);
+    points.first.force += const Offset(wallAttractionForce * 4, 0);
+    points.last.force += const Offset(wallAttractionForce * 4, 0);
 
     for (int i = 0; i < points.length; i++) {
+      if (isFlipped) {
+        points[i].velocity += -const Offset(10, 0);
+      }
+
       /// Points should only move horizontally
       points[i].force = Offset(points[i].force.dx, 0);
 
-      /// Update speed
+      /// Update position
       points[i].position += points[i].velocity * dt;
 
       /// Points should be stopped on the right screen edge
@@ -119,8 +122,20 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
         points[i].position = Offset(widget.size.width, points[i].position.dy);
       }
 
+      /// Points should be stopped on the left screen edge
+      if (points[i].position.dx < 0) {
+        points[i].position = Offset(0, points[i].position.dy);
+      }
+
+      /// Update velocity
       final acceleration = points[i].force / pointMass.toDouble();
       points[i].velocity += acceleration * dt;
+
+      /// Check if it's at the right (initial) height
+      if (points[i].position.dx == widget.size.width &&
+          points[i].position.dy != widget.size.height / (pointCount - 1) * i) {
+        points[i].position = Offset(widget.size.width, widget.size.height / (pointCount - 1) * i);
+      }
     }
   }
 
@@ -139,7 +154,7 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
           /// Only for debugging
           Positioned.fill(
             child: CustomPaint(
-              painter: MyPainter(points),
+              painter: MyPainter(points, touchOffset),
             ),
           ),
           Positioned.fill(
@@ -159,11 +174,18 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
   int? pullingPointIndex;
 
   void onHorizontalDragStart(DragStartDetails details) {
-    pullingPointIndex = (details.globalPosition.dy * (pointCount - 1) / widget.size.height).round();
+    if (details.localPosition.dx > widget.size.width - 50) {
+      pullingPointIndex = (details.globalPosition.dy * (pointCount - 1) / widget.size.height).round();
+      touchOffset = details.globalPosition;
+    }
   }
 
   void onHorizontalDragUpdate(DragUpdateDetails details) {
-    touchOffset = details.localPosition;
+    touchOffset = details.globalPosition;
+
+    if (touchOffset!.dx < widget.size.width * 0.3) {
+      isFlipped = true;
+    }
   }
 
   void onHorizontalDragEnd(DragEndDetails details) {
@@ -173,9 +195,10 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
 }
 
 class MyPainter extends CustomPainter {
-  MyPainter(this.points);
+  MyPainter(this.points, this.touchOffset);
 
   final List<PhysicalPoint> points;
+  final Offset? touchOffset;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -198,13 +221,15 @@ class MyPainter extends CustomPainter {
       );
     }
 
-    canvas.drawPath(
-      FluidPageClipper(points.map((e) => e.position).toList()).getClip(Size.zero),
-      Paint()
-        ..color = Colors.black12
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 5,
-    );
+    if (touchOffset != null) {
+      canvas.drawCircle(
+        touchOffset!,
+        40,
+        Paint()
+          ..color = Colors.black
+          ..style = PaintingStyle.fill,
+      );
+    }
   }
 
   @override

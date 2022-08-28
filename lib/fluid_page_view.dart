@@ -23,11 +23,15 @@ class _FluidPageViewState extends State<FluidPageView> {
       builder: (context, constraints) {
         return Stack(
           children: [
-            widget.children.elementAt(bottomIndex),
-            ClippedFluidPage(
-              size: constraints.biggest,
-              child: widget.children.elementAt(topIndex),
+            Positioned.fill(
+              child: widget.children.elementAt(bottomIndex),
             ),
+            Positioned.fill(
+              child: ClippedFluidPage(
+                size: constraints.biggest,
+                child: widget.children.elementAt(topIndex),
+              ),
+            )
           ],
         );
       },

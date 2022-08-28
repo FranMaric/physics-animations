@@ -8,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,30 +18,20 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         body: FluidPageView(
           children: [
-            Positioned.fill(
-              child: Container(
-                color: Colors.red,
-                alignment: Alignment.center,
-                child: const Text(
-                  'I am first',
-                  style: TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+            Container(
+              color: Colors.red,
+              alignment: Alignment.center,
+              child: const Text(
+                'I am first',
+                style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
-            Positioned.fill(
-              child: Container(
-                color: Colors.blue,
-                alignment: Alignment.center,
-                child: const Text(
-                  'I am second',
-                  style: TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+            Container(
+              color: Colors.blue,
+              alignment: Alignment.center,
+              child: const Text(
+                'I am second',
+                style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
           ],
