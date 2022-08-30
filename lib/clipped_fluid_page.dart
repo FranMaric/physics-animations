@@ -6,16 +6,18 @@ import 'package:flutter/material.dart';
 
 import 'fluid_page_clipper.dart';
 
-const pointMass = 20;
+//TODO: adjust constants
+const pointMass = 4;
 const springStiffness = 4;
 const dampingStiffness = 3;
 const wallAttractionForce = 90.0;
 
 class ClippedFluidPage extends StatefulWidget {
-  const ClippedFluidPage({required this.child, required this.size, Key? key}) : super(key: key);
+  const ClippedFluidPage({required this.child, required this.size, required this.onNext, Key? key}) : super(key: key);
 
   final Widget child;
   final Size size;
+  final VoidCallback onNext;
 
   @override
   State<ClippedFluidPage> createState() => _ClippedFluidPageState();
@@ -218,16 +220,6 @@ class MyPainter extends CustomPainter {
           ..color = Colors.blue
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2,
-      );
-    }
-
-    if (touchOffset != null) {
-      canvas.drawCircle(
-        touchOffset!,
-        40,
-        Paint()
-          ..color = Colors.black
-          ..style = PaintingStyle.fill,
       );
     }
   }
