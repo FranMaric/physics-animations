@@ -172,7 +172,7 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
 
   Offset? touchOffset;
 
-  /// Point on which force is applied to pull all points
+  /// Index of point on which force is applied from the drag gesture
   int? pullingPointIndex;
 
   void onHorizontalDragStart(DragStartDetails details) {
@@ -185,7 +185,7 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
   void onHorizontalDragUpdate(DragUpdateDetails details) {
     touchOffset = details.globalPosition;
 
-    if (touchOffset!.dx < widget.size.width * 0.3) {
+    if (touchOffset!.dx < widget.size.width * 0.25) {
       isFlipped = true;
     }
   }
@@ -196,6 +196,9 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
   }
 }
 
+/// Used to paint positions and forces
+///
+/// Only used for debugging
 class MyPainter extends CustomPainter {
   MyPainter(this.points, this.touchOffset);
 
