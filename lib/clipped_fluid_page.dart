@@ -7,17 +7,16 @@ import 'package:flutter/material.dart';
 import 'fluid_page_clipper.dart';
 
 //TODO: adjust constants
-const pointMass = 4;
-const springStiffness = 4;
-const dampingStiffness = 3;
-const wallAttractionForce = 90.0;
+const pointMass = 3;
+const springStiffness = 6;
+const dampingStiffness = 2;
+const wallAttractionForce = 70.0;
 
 class ClippedFluidPage extends StatefulWidget {
-  const ClippedFluidPage({required this.child, required this.size, required this.onNext, Key? key}) : super(key: key);
+  const ClippedFluidPage({required this.child, required this.size, Key? key}) : super(key: key);
 
   final Widget child;
   final Size size;
-  final VoidCallback onNext;
 
   @override
   State<ClippedFluidPage> createState() => _ClippedFluidPageState();
@@ -103,10 +102,6 @@ class _ClippedFluidPageState extends State<ClippedFluidPage> {
       points[pullingPointIndex!].position = touchOffset!;
       points[pullingPointIndex!].force = Offset.zero;
     }
-
-    /// First and last point get more wall attraction force
-    points.first.force += const Offset(wallAttractionForce * 4, 0);
-    points.last.force += const Offset(wallAttractionForce * 4, 0);
 
     for (int i = 0; i < points.length; i++) {
       if (isFlipped) {

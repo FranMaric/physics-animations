@@ -30,13 +30,6 @@ class _FluidPageViewState extends State<FluidPageView> {
               child: ClippedFluidPage(
                 size: constraints.biggest,
                 child: widget.children.elementAt(topIndex),
-                onNext: () {
-                  //TODO: check if this works
-                  setState(() {
-                    bottomIndex++;
-                    topIndex++;
-                  });
-                },
               ),
             )
           ],
