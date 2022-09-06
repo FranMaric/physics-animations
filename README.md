@@ -1,1 +1,1 @@
-# Experiment with physics animations in FLutter without external libraries
+# Experiment with physics animations in Flutter
